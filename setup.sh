@@ -167,21 +167,21 @@ echo "Setting up config files for '$TARGET_USER'..."
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # .tmux.conf
-if [[ -f "$SCRIPT_DIR/tmux.conf" ]]; then
-  cp "$SCRIPT_DIR/tmux.conf" "$USER_HOME/.tmux.conf"
+if [[ -f "$SCRIPT_DIR/.tmux.conf" ]]; then
+  cp "$SCRIPT_DIR/.tmux.conf" "$USER_HOME/.tmux.conf"
   chown "$TARGET_USER":"$TARGET_USER" "$USER_HOME/.tmux.conf"
-  echo "Copied tmux.conf to $USER_HOME/.tmux.conf"
+  echo "Copied .tmux.conf to $USER_HOME/.tmux.conf"
 else
-  echo "Warning: tmux.conf not found in the current directory."
+  echo "Warning: .tmux.conf not found in the current directory."
 fi
 
 # .vimrc
-if [[ -f "$SCRIPT_DIR/vimrc" ]]; then
-  cp "$SCRIPT_DIR/vimrc" "$USER_HOME/.vimrc"
+if [[ -f "$SCRIPT_DIR/.vimrc" ]]; then
+  cp "$SCRIPT_DIR/.vimrc" "$USER_HOME/.vimrc"
   chown "$TARGET_USER":"$TARGET_USER" "$USER_HOME/.vimrc"
-  echo "Copied vimrc to $USER_HOME/.vimrc"
+  echo "Copied .vimrc to $USER_HOME/.vimrc"
 else
-  echo "Warning: vimrc not found in the current directory."
+  echo "Warning: .vimrc not found in the current directory."
 fi
 
 # .vimrc.plug (optional)
