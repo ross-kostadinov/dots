@@ -84,29 +84,40 @@ A Bash script to automate the setup of an Ubuntu server with secure SSH settings
 
 ## Usage (Only copy configs)
 
-### Vim
+**Vim**
 
-    Install Vim-Plug plugin manager:
+- Install Vim-Plug plugin manager:
 
-    1. Download **Vim-Plug**
-    >curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+1. Download **Vim-Plug**
 
-    2. Enter Vim with **vim** and type:
-    > :PlugUpdate
+    ```bash
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    ```
 
-### Tmux
+2. Enter Vim with **vim** and type:
+    ```bash
+    :PlugUpdate
+    ```
 
-    Install Tmux plugin manger:
+**Tmux**
 
-    1. Clone **TPM**
-    >git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+- Install Tmux plugin manger:
 
-    2. Install the plugins
-    Enter Tmux with **tmux** and inside press **Ctrl + a + I**
+1. Clone **TPM**
 
-    3. Source the config file (.tmux.conifg)
-    Use **Ctrl + a + r** or type:
-    >tmux source ~/.tmux.conf
+    ```bash
+    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+    ```
+
+2. Install the plugins
+
+    - Enter Tmux with **tmux** and inside press **Ctrl + a + I**
+
+3. Source the config file (.tmux.conifg)
+    - Use **Ctrl + a + r** or type:
+    ```bash
+    tmux source ~/.tmux.conf
+    ```
 
 ## Notes & Warnings
 
