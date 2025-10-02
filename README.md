@@ -74,50 +74,7 @@ A Bash script to automate the setup of an Ubuntu server with secure SSH settings
 
 5. **Wait** for the script to finish. It will install Docker, Git, Vim, Tmux, configure SSH, and place your config files in `/home/<new_user>`.
 
-6. **Switch to the new user** and **complete** Tmux & Vim plugin setups:
-    ```bash
-    sudo su - <new_user>
-    ```
-    - In **Vim**: Run `:PlugUpdate` (or `:PlugInstall`) to fetch any plugins defined in `.vimrc` (and `.vimrc.plug`, if you’re splitting configs).
-    - In **Tmux**: Press **Ctrl + a + I** (that is, hold `Control`, press `a`, then `I`) to install plugins.
-        - Reload Tmux config with **Ctrl + a + r** or `tmux source ~/.tmux.conf`.
 
-## Usage (Only copy configs)
-
-**Vim**
-
-- Install Vim-Plug plugin manager:
-
-1. Download **Vim-Plug**
-
-    ```bash
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    ```
-
-2. Enter Vim with **vim** and type:
-    ```bash
-    :PlugUpdate
-    ```
-
-**Tmux**
-
-- Install Tmux plugin manger:
-
-1. Clone **TPM**
-
-    ```bash
-    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-    ```
-
-2. Install the plugins
-
-    - Enter Tmux with **tmux** and inside press **Ctrl + a + I**
-
-3. Source the config file (.tmux.conifg)
-    - Use **Ctrl + a + r** or type:
-    ```bash
-    tmux source ~/.tmux.conf
-    ```
 
 ## Notes & Warnings
 
