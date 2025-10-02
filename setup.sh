@@ -184,27 +184,6 @@ else
   echo "Warning: .vimrc not found in the current directory."
 fi
 
-# .vimrc.plug (optional)
-if [[ -f "$SCRIPT_DIR/.vimrc.plug" ]]; then
-  cp "$SCRIPT_DIR/.vimrc.plug" "$USER_HOME/.vimrc.plug"
-  chown "$TARGET_USER":"$TARGET_USER" "$USER_HOME/.vimrc.plug"
-  echo "Copied .vimrc.plug to $USER_HOME/.vimrc.plug"
-else
-  echo "Warning: .vimrc.plug not found in the current directory."
-fi
-
-#######################################
-# 8. Install Tmux Plugin Manager (TPM) & Vim-Plug for user
-#######################################
-echo "Installing Tmux Plugin Manager and Vim-Plug for '$TARGET_USER'..."
-
-# Tmux Plugin Manager (TPM)
-sudo -u "$TARGET_USER" git clone https://github.com/tmux-plugins/tpm "$USER_HOME/.tmux/plugins/tpm" || true
-
-# Vim-Plug
-sudo -u "$TARGET_USER" bash -c "curl -fLo $USER_HOME/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" || true
-
 #######################################
 # 9. Final instructions
 #######################################
@@ -214,19 +193,7 @@ echo
 echo " - User '$TARGET_USER' has sudo privileges."
 echo " - SSH is on port $SSH_PORT, root login/password auth disabled."
 echo " - Docker is installed; '$TARGET_USER' is in the docker group."
-echo " - .tmux.conf, .vimrc, and optional .vimrc.plug are in $USER_HOME."
+echo " - .tmux.conf and .vimrc are in $USER_HOME."
 echo " - Tmux Plugin Manager (TPM) and Vim-Plug have been installed."
 echo
-echo "Next steps for '$TARGET_USER':"
-echo "1) Switch to user '$TARGET_USER':  sudo su - $TARGET_USER"
-echo "2) In Vim, install or update plugins:"
-echo "   vim"
-echo "   :PlugUpdate"
-echo
-echo "3) In Tmux, install plugins:"
-echo "   tmux"
-echo "   (Press Ctrl + a + I to install plugins.)"
-echo
-echo "4) To reload tmux.conf, press Ctrl + a + r or run:"
-echo "   tmux source ~/.tmux.conf"
 echo "-----------------------------------------------"
