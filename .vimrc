@@ -1,61 +1,10 @@
-" --- VIM Plug bootstrap ---
-let s:plug_path = expand('~/.vim/autoload/plug.vim')
-let s:plug_dir  = expand('~/.vim/autoload')
-let s:plug_url  = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-
-if !filereadable(s:plug_path)
-  if !isdirectory(s:plug_dir)
-    call mkdir(s:plug_dir, 'p')
-  endif
-  if executable('curl')
-    silent execute '!curl -fLo ' . shellescape(s:plug_path) . ' --create-dirs ' . shellescape(s:plug_url)
-  elseif executable('wget')
-    " Some distros don’t create dirs automatically with wget; we did mkdir above.
-    silent execute '!wget -O ' . shellescape(s:plug_path) . ' ' . shellescape(s:plug_url)
-  else
-    echohl WarningMsg
-    echom 'vim-plug bootstrap failed: install curl or wget, or pre-copy plug.vim to ~/.vim/autoload/'
-    echohl None
-  endif
-  " On first successful download, install plugins after startup
-  if filereadable(s:plug_path)
-    augroup PlugBootstrap
-      autocmd!
-      autocmd VimEnter * ++once PlugInstall --sync | source $MYVIMRC
-    augroup END
-  endif
+" ----------------------------
+" Plugin Manager
+" ----------------------------
+" Source Plug config
+if filereadable(expand("~/.vimrc.plug"))
+    source ~/.vimrc.plug
 endif
-
-" --- Plugins ---
-call plug#begin('~/.vim/plugged')
-  " Core UX
-  Plug 'joshdick/onedark.vim'
-  Plug 'vim-airline/vim-airline'
-  Plug 'tpope/vim-sensible'
-  Plug 'tpope/vim-surround'
-  Plug 'tpope/vim-repeat'
-  Plug 'tpope/vim-commentary'
-  Plug 'tpope/vim-fugitive'
-  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-  Plug 'junegunn/fzf.vim'
-  Plug 'rbong/vim-flog'
-  Plug 'preservim/nerdtree'      " or 'lambdalisue/fern.vim'
-  Plug 'airblade/vim-gitgutter'
-  Plug 'jiangmiao/auto-pairs'
-  Plug 'Yggdroot/indentLine'
-
-  " LSP/diagnostics/completion (pick one path)
-  Plug 'dense-analysis/ale'
-  Plug 'prabirshrestha/asyncomplete.vim'
-  Plug 'prabirshrestha/asyncomplete-lsp.vim'
-  Plug 'prabirshrestha/vim-lsp'
-
-  " Snippets
-  Plug 'SirVer/ultisnips'
-  Plug 'honza/vim-snippets'
-call plug#end()
-
-
 
 " ----------------------------
 " General Settings
@@ -88,9 +37,9 @@ colorscheme onedark             " Set theme
 " ----------------------------
 " Tabs and Indentation
 " ----------------------------
-set tabstop=2                   " Tab width
-set softtabstop=2               " Spaces for <Tab>
-set shiftwidth=2                " Spaces for indentation
+set tabstop=4                   " Tab width
+set softtabstop=4               " Spaces for <Tab>
+set shiftwidth=4                " Spaces for indentation
 set expandtab                   " Convert tabs to spaces
 set smartindent                 " Enable smart indentation
 
@@ -135,6 +84,7 @@ nnoremap <leader>+ <C-a>
 nnoremap <leader>- <C-x>
 
 " Buffer Management
+nnoremap <leader>bo :enew<CR>
 nnoremap <leader>bx :bwipeout<CR>
 nnoremap <leader>bn :bnext<CR>
 nnoremap <leader>bp :bprevious<CR>
@@ -153,6 +103,14 @@ nnoremap <leader>tn :tabn<CR>
 nnoremap <leader>tp :tabp<CR>
 nnoremap <leader>tb :tab split<CR>
 
+" Move between buffers
+nnoremap <S-h> :bprevious<CR>
+nnoremap <S-l> :bnext<CR>
+
+" Optionally also use Shift + arrows
+nnoremap <S-Left> :bprevious<CR>
+nnoremap <S-Right> :bnext<CR>
+
 " Pane Navigation with hjkl
 nnoremap <C-h> <C-w>h           " Move to the left pane
 nnoremap <C-j> <C-w>j           " Move to the bottom pane
@@ -169,40 +127,9 @@ nnoremap <C-Right> <C-w>l           " Move to the right pane
 nnoremap <leader>ff :Files<CR>
 nnoremap <leader>fb :Buffers<CR>
 
-
-" Git
-nnoremap <leader>gs :G<CR>
-nnoremap <leader>gc :Git commit<CR>
-nnoremap <leader>gp :Git push<CR>
-
 " Center screen after scrolling
 nnoremap <C-d> <C-d>zz
 nnoremap <C-u> <C-u>zz
-
-
-" Conditional Pane/Tab Navigation
-function! MoveLeftOrTabPrevious()
-  if winnr('$') > 1
-    wincmd h
-  else
-    tabprevious
-  endif
-endfunction
-
-function! MoveRightOrTabNext()
-  if winnr('$') > 1
-    wincmd l
-  else
-    tabnext
-  endif
-endfunction
-
-nnoremap <S-Left> :call MoveLeftOrTabPrevious()<CR>
-nnoremap <S-Right> :call MoveRightOrTabNext()<CR>
-
-nnoremap <S-h> :call MoveLeftOrTabPrevious()<CR>
-nnoremap <S-l> :call MoveRightOrTabNext()<CR>
-
 
 " ----------------------------
 " Airline Configuration
