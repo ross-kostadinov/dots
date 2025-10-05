@@ -63,7 +63,7 @@ set nocompatible                " Disable compatibility mode
 syntax on                       " Enable syntax highlighting
 set encoding=UTF-8              " Set encoding to UTF-8
 set mouse=a                     " Enable mouse support
-set clipboard=unnamedplu        " Use system clipboard
+set clipboard=unnamedplus        " Use system clipboard
 
 " ----------------------------
 " Performance Tweaks
