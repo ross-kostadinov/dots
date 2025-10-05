@@ -1,10 +1,60 @@
 " ----------------------------
 " Plugin Manager
 " ----------------------------
-" Source Plug config
-if filereadable(expand("~/.vimrc.plug"))
-    source ~/.vimrc.plug
+
+let s:plug_path = expand('~/.vim/autoload/plug.vim')
+let s:plug_dir  = expand('~/.vim/autoload')
+let s:plug_url  = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
+if !filereadable(s:plug_path)
+  if !isdirectory(s:plug_dir)
+    call mkdir(s:plug_dir, 'p')
+  endif
+  if executable('curl')
+    silent execute '!curl -fLo ' . shellescape(s:plug_path) . ' --create-dirs ' . shellescape(s:plug_url)
+  elseif executable('wget')
+    " Some distros don’t create dirs automatically with wget; we did mkdir above.
+    silent execute '!wget -O ' . shellescape(s:plug_path) . ' ' . shellescape(s:plug_url)
+  else
+    echohl WarningMsg
+    echom 'vim-plug bootstrap failed: install curl or wget, or pre-copy plug.vim to ~/.vim/autoload/'
+    echohl None
+  endif
+  " On first successful download, install plugins after startup
+  if filereadable(s:plug_path)
+    augroup PlugBootstrap
+      autocmd!
+      autocmd VimEnter * ++once PlugInstall --sync | source $MYVIMRC
+    augroup END
+  endif
 endif
+
+" --- Plugins ---
+call plug#begin('~/.vim/plugged')
+  " Core UX
+  Plug 'joshdick/onedark.vim'
+  Plug 'vim-airline/vim-airline'
+  Plug 'tpope/vim-sensible'
+  Plug 'tpope/vim-surround'
+  Plug 'tpope/vim-repeat'
+  Plug 'tpope/vim-commentary'
+  Plug 'tpope/vim-fugitive'
+  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+  Plug 'junegunn/fzf.vim'
+  Plug 'rbong/vim-flog'
+  Plug 'preservim/nerdtree'      " or 'lambdalisue/fern.vim'
+  Plug 'airblade/vim-gitgutter'
+  Plug 'jiangmiao/auto-pairs'
+  Plug 'Yggdroot/indentLine'
+
+  " LSP/diagnostics/completion (pick one path)
+  Plug 'dense-analysis/ale'
+  Plug 'prabirshrestha/asyncomplete.vim'
+  Plug 'prabirshrestha/asyncomplete-lsp.vim'
+  Plug 'prabirshrestha/vim-lsp'
+
+call plug#end()
+
 
 " ----------------------------
 " General Settings
@@ -13,7 +63,7 @@ set nocompatible                " Disable compatibility mode
 syntax on                       " Enable syntax highlighting
 set encoding=UTF-8              " Set encoding to UTF-8
 set mouse=a                     " Enable mouse support
-set clipboard=unnamed           " Use system clipboard
+set clipboard=unnamedplu        " Use system clipboard
 
 " ----------------------------
 " Performance Tweaks
@@ -37,9 +87,9 @@ colorscheme onedark             " Set theme
 " ----------------------------
 " Tabs and Indentation
 " ----------------------------
-set tabstop=4                   " Tab width
-set softtabstop=4               " Spaces for <Tab>
-set shiftwidth=4                " Spaces for indentation
+set tabstop=2                   " Tab width
+set softtabstop=2               " Spaces for <Tab>
+set shiftwidth=2                " Spaces for indentation
 set expandtab                   " Convert tabs to spaces
 set smartindent                 " Enable smart indentation
 
