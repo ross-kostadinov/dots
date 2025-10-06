@@ -1,11 +1,11 @@
 -- ===================================================================
--- Neovim config (Lua) — Ross
--- Manager: lazy.nvim
+-- Neovim init.lua — Full config with lazy.nvim, which-key (spec),
+-- lualine (powerline arrows), Telescope, nvim-tree, LSP (0.11 API),
+-- completion, Git, and ALL your mappings with comments.
+---@diagnostic disable: undefined-global
 -- ===================================================================
 
--- ----------------------------
--- Bootstrap lazy.nvim
--- ----------------------------
+-- 0) Bootstrap lazy.nvim ---------------------------------------------------
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -16,171 +16,155 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- ----------------------------
--- General Options (Lua)
--- ----------------------------
-local o, g = vim.opt, vim.g
-
-o.compatible = false
-o.termguicolors = true
-o.encoding = "utf-8"
-o.mouse = "a"
-o.clipboard = "unnamedplus"
-
--- Performance
-o.updatetime = 250
+-- 1) Core Options ----------------------------------------------------------
+vim.g.mapleader = " "  -- Space as <leader>
 
 -- UI
-o.number = true
-o.relativenumber = true
-o.numberwidth = 4
-o.signcolumn = "yes"      -- keep signs separate from number column (more stable)
-o.cursorline = true
-o.scrolloff = 10
-o.wrap = false
-o.showmode = false
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.numberwidth = 4
+vim.opt.termguicolors = true
+vim.opt.cursorline = true
+vim.opt.signcolumn = "yes"
+vim.opt.wrap = false
+vim.opt.scrolloff = 10
+vim.opt.showmode = false
+vim.opt.mouse = "a"
+vim.opt.clipboard = "unnamedplus"
 
--- Tabs / indentation
-o.tabstop = 2
-o.softtabstop = 2
-o.shiftwidth = 2
-o.expandtab = true
-o.smartindent = true
+-- Editing / Indent
+vim.opt.expandtab = true
+vim.opt.tabstop = 2
+vim.opt.softtabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.smartindent = true
 
 -- Search
-o.incsearch = true
-o.hlsearch = false
-o.ignorecase = true
-o.smartcase = true
+vim.opt.incsearch = true
+vim.opt.hlsearch = false
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
 
--- Splits / buffers
-o.splitbelow = true
-o.splitright = true
-o.hidden = true
+-- Windows / Buffers
+vim.opt.splitbelow = true
+vim.opt.splitright = true
+vim.opt.hidden = true
 
--- Undo / backup
-o.swapfile = false
-o.backup = false
-o.undofile = true
-o.undodir = vim.fn.stdpath("config") .. "/undodir"
+-- Undo / Backups
+vim.opt.swapfile = false
+vim.opt.backup = false
+vim.opt.undofile = true
+vim.opt.undodir = "~/config/nvim/undodir"
 
--- Leader
-g.mapleader = " "
+-- Performance
+vim.opt.updatetime = 250
 
--- ----------------------------
--- Plugins via lazy.nvim
--- ----------------------------
+-- 2) Plugins via lazy.nvim -------------------------------------------------
 require("lazy").setup({
   -- Theme
-  { "navarasu/onedark.nvim", lazy = false, priority = 1000, config = function()
-      require("onedark").setup({ style = "darker" })
+  {
+    "navarasu/onedark.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = { style = "darker" },
+    config = function(_, opts)
+      require("onedark").setup(opts)
       require("onedark").load()
-    end
+    end,
   },
 
-  -- Statusline (replacement for airline)
-  { "nvim-lualine/lualine.nvim", dependencies = { "nvim-tree/nvim-web-devicons" }, config = function()
-      require("lualine").setup({
-        options = { theme = "onedark", globalstatus = true, component_separators = "", section_separators = "" },
-        sections = {
-          lualine_x = {}, lualine_y = {}, lualine_z = { { "progress" }, { "location" } },
-        },
-      })
-    end
+  -- Icons (which-key health likes this)
+  { "echasnovski/mini.icons", version = "*", opts = {} },
+  { "nvim-tree/nvim-web-devicons" },
+
+  -- Statusline (with powerline arrows)
+  {
+    "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      options = {
+        theme = "onedark",
+        globalstatus = true,
+        section_separators   = { left = "", right = "" }, -- arrows
+        component_separators = { left = "", right = "" }, -- thin separators
+      },
+      sections = {
+        lualine_a = { "mode" },
+        lualine_b = { "branch", "diff" },
+        lualine_c = { { "filename", path = 1 } },
+        lualine_x = {},
+        lualine_y = {},
+        lualine_z = { "progress", "location" },
+      },
+    },
   },
 
-  -- File explorer (replacement for NERDTree)
-  { "nvim-tree/nvim-tree.lua",
+  -- File Explorer
+  {
+    "nvim-tree/nvim-tree.lua",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     cmd = { "NvimTreeToggle", "NvimTreeFindFile" },
-    keys = { { "<leader>e", "<cmd>NvimTreeToggle<cr>", desc = "Toggle file tree" } },
     opts = {
       view = { width = 36 },
       renderer = { group_empty = true },
       filters = { dotfiles = false },
       git = { enable = true },
+      hijack_cursor = true,
     },
   },
 
-  -- Telescope (replacement for fzf.vim UI; fast and native)
-  { "nvim-telescope/telescope.nvim", branch = "0.1.x",
+  -- Telescope + native FZF
+  {
+    "nvim-telescope/telescope.nvim",
+    branch = "0.1.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
-      { "nvim-telescope/telescope-fzf-native.nvim", build = "make", cond = function()
-          return vim.fn.executable("make") == 1
-        end
-      },
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make",
+        cond = function() return vim.fn.executable("make") == 1 end },
     },
     config = function()
       local t = require("telescope")
       t.setup({})
       pcall(t.load_extension, "fzf")
-    end
+    end,
   },
 
-  -- Which Key
-  {  "folke/which-key.nvim",
-    event = "VeryLazy",
-    opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-    },
-    keys = {
-      {
-        "<leader>?",
-        function()
-          require("which-key").show({ global = false })
-        end,
-        desc = "Buffer Local Keymaps (which-key)",
-      },
-    },
-  },
+  -- Git
+  "tpope/vim-fugitive",
+  { "rbong/vim-flog", cmd = { "Flog", "Flogsplit" } },
+  { "lewis6991/gitsigns.nvim", opts = {} },
 
-  -- Git integration
-  "tpope/vim-fugitive",                     -- keep: best Git porcelain
-  { "rbong/vim-flog", cmd = { "Flog", "Flogsplit" } }, -- works great with fugitive
-  { "lewis6991/gitsigns.nvim", opts = {} }, -- replacement for gitgutter (faster/neovim-native)
-
-  -- Comments / Surround / Pairs (modern equivalents)
-  { "numToStr/Comment.nvim", opts = {} },   -- replacement for vim-commentary
-  { "kylechui/nvim-surround", version = "*", opts = {} }, -- replacement for vim-surround
-  { "windwp/nvim-autopairs", event = "InsertEnter", opts = {} }, -- replacement for auto-pairs
-
-  -- Indentation guides (replacement for indentLine)
+  -- Editing QoL
+  { "numToStr/Comment.nvim", opts = {} },
+  { "kylechui/nvim-surround", version = "*", opts = {} },
+  { "windwp/nvim-autopairs", event = "InsertEnter", opts = {} },
   { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
 
-  -- Mason + LSP (modern Neovim 0.11+ API)
-  {
-    "williamboman/mason.nvim",
-    build = ":MasonUpdate",
-    config = true,
-  },
+  -- LSP (Neovim 0.11 API + fallback)
+  { "neovim/nvim-lspconfig" },
+  { "williamboman/mason.nvim", build = ":MasonUpdate", opts = {} },
   {
     "williamboman/mason-lspconfig.nvim",
-    dependencies = {
-      "neovim/nvim-lspconfig",
-      "hrsh7th/cmp-nvim-lsp",
-    },
+    dependencies = { "hrsh7th/cmp-nvim-lsp" },
     config = function()
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
+      local has_new = vim.lsp and vim.lsp.config
+      local function lsp_setup(server, opts)
+        opts = opts or {}
+        opts.capabilities = capabilities
+        if has_new and vim.lsp.config[server] then
+          vim.lsp.config[server].setup(opts)
+        else
+          require("lspconfig")[server].setup(opts)
+        end
+      end
 
       require("mason-lspconfig").setup({
-        ensure_installed = {
-          "lua_ls", "ts_ls", "pyright", "gopls", "bashls", "jsonls", "yamlls",
-        },
+        ensure_installed = { "lua_ls", "ts_ls", "pyright", "gopls", "bashls", "jsonls", "yamlls" },
         handlers = {
-          -- Default handler for all servers
-          function(server)
-            vim.lsp.config[server].setup({
-              capabilities = capabilities,
-            })
-          end,
-
-          -- Lua LS (special config)
+          function(server) lsp_setup(server, {}) end,
           lua_ls = function()
-            vim.lsp.config.lua_ls.setup({
-              capabilities = capabilities,
+            lsp_setup("lua_ls", {
               settings = {
                 Lua = {
                   diagnostics = { globals = { 'vim' } },
@@ -195,7 +179,8 @@ require("lazy").setup({
   },
 
   -- Completion
-  { "hrsh7th/nvim-cmp",
+  {
+    "hrsh7th/nvim-cmp",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
@@ -223,104 +208,138 @@ require("lazy").setup({
             else fallback() end
           end, { "i", "s" }),
         }),
-        sources = { { name = "nvim_lsp" }, { name = "path" }, { name = "buffer" }, { name = "luasnip" } },
+        sources = {
+          { name = "nvim_lsp" },
+          { name = "path" },
+          { name = "buffer" },
+          { name = "luasnip" },
+        },
       })
-    end
+    end,
+  },
+
+  -- which-key (modern spec)  ---------------------------------------------
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {
+      preset = "helix",
+      plugins = {
+        marks = true,
+        registers = true,
+        spelling = { enabled = true, suggestions = 20 },
+      },
+      win = { border = "single" },  -- NOTE: 'win' replaces deprecated 'window'
+      layout = { spacing = 6, align = "left" },
+      spec = {
+        -- Groups/prefixes (flat spec entries are simplest & robust)
+        { "<leader>f",  group = "file/find",        mode = { "n", "v" } },
+        { "<leader>g",  group = "git",              mode = { "n", "v" } },
+        { "<leader>b",  group = "buffers",          mode = { "n", "v" } },
+        { "<leader>w",  group = "windows",          mode = "n", proxy = "<c-w>",
+          expand = function() return require("which-key.extras").expand.win() end },
+        { "<leader>t",  group = "tabs",             mode = "n" },
+        { "<leader>s",  group = "splits",           mode = "n" },
+        { "<leader>u",  group = "ui",               mode = "n" },
+        { "<leader>x",  group = "diagnostics",      mode = "n" },
+        { "<leader>e",  group = "explorer",         mode = "n" },
+        { "g",          group = "goto",             mode = { "n", "v" } },
+        { "z",          group = "fold",             mode = "n" },
+        { "[",          group = "prev",             mode = "n" },
+        { "]",          group = "next",             mode = "n" },
+        { "gx",         desc  = "Open with system app", mode = "n" },
+      },
+    },
+    keys = {
+      { "<leader>?", function() require("which-key").show({ global = false }) end,
+        desc = "Show buffer-local keymaps" },
+      { "<c-w><space>", function() require("which-key").show({ keys = "<c-w>", loop = true }) end,
+        desc = "Window keymap helper" },
+    },
   },
 }, {
-  ui = { border = "rounded" }
+  ui = { border = "rounded" },
 })
 
--- ----------------------------
--- Keymaps (with descriptions for which-key)
--- ----------------------------
+-- 3) Your Keymaps (all with comments + desc) ------------------------------
 local map = vim.keymap.set
 
--- Show which-key for <leader>
-map("n", "<leader>", "<cmd>WhichKey '<Space>'<cr>", { desc = "Show leader keymaps" })
-
--- Leave insert/visual quickly with "kj"
+-- Quick escape using "kj"
 map("i", "kj", "<Esc>", { desc = "Exit insert mode" })
 map("v", "kj", "<Esc>", { desc = "Exit visual mode" })
 
 -- File explorer
-map("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file tree" })
+map("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
 
--- Increment / Decrement numbers
+-- Increment/Decrement numbers
 map("n", "<leader>+", "<C-a>", { desc = "Increment number" })
 map("n", "<leader>-", "<C-x>", { desc = "Decrement number" })
 
--- Buffer management
-map("n", "<leader>bo", "<cmd>enew<CR>",       { desc = "New empty buffer" })
-map("n", "<leader>bx", "<cmd>bwipeout<CR>",   { desc = "Wipe buffer" })
-map("n", "<leader>bn", "<cmd>bnext<CR>",      { desc = "Next buffer" })
-map("n", "<leader>bp", "<cmd>bprevious<CR>",  { desc = "Previous buffer" })
-map("n", "<leader>bl", "<cmd>ls<CR>",         { desc = "List buffers" })
+-- Buffer Management
+map("n", "<leader>bo", "<cmd>enew<CR>",      { desc = "New empty buffer" })
+map("n", "<leader>bx", "<cmd>bwipeout<CR>",  { desc = "Wipe buffer" })
+map("n", "<leader>bn", "<cmd>bnext<CR>",     { desc = "Next buffer" })
+map("n", "<leader>bp", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
+map("n", "<leader>bl", "<cmd>ls<CR>",        { desc = "List buffers" })
 
--- Window management
-map("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
-map("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
-map("n", "<leader>se", "<C-w>=", { desc = "Equalize window sizes" })
+-- Window Management
+map("n", "<leader>sv", "<C-w>v",         { desc = "Split window vertically" })
+map("n", "<leader>sh", "<C-w>s",         { desc = "Split window horizontally" })
+map("n", "<leader>se", "<C-w>=",         { desc = "Equalize window sizes" })
 map("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current window" })
 
--- Tab management
-map("n", "<leader>to", "<cmd>tabnew<CR>",  { desc = "New tab" })
-map("n", "<leader>tx", "<cmd>tabclose<CR>",{ desc = "Close tab" })
-map("n", "<leader>tn", "<cmd>tabnext<CR>", { desc = "Next tab" })
+-- Tab Management
+map("n", "<leader>to", "<cmd>tabnew<CR>",      { desc = "New tab" })
+map("n", "<leader>tx", "<cmd>tabclose<CR>",    { desc = "Close tab" })
+map("n", "<leader>tn", "<cmd>tabnext<CR>",     { desc = "Next tab" })
 map("n", "<leader>tp", "<cmd>tabprevious<CR>", { desc = "Previous tab" })
-map("n", "<leader>tb", "<cmd>tab split<CR>", { desc = "Buffer in new tab" })
+map("n", "<leader>tb", "<cmd>tab split<CR>",   { desc = "Open buffer in new tab" })
 
--- Buffer switching (Shift+h/l and arrows)
-map("n", "<S-h>", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
-map("n", "<S-l>", "<cmd>bnext<CR>",     { desc = "Next buffer" })
-map("n", "<S-Left>",  "<cmd>bprevious<CR>", { desc = "Previous buffer" })
-map("n", "<S-Right>", "<cmd>bnext<CR>",     { desc = "Next buffer" })
+-- Move between buffers
+map("n", "<S-h>",    "<cmd>bprevious<CR>", { desc = "Previous buffer" })
+map("n", "<S-l>",    "<cmd>bnext<CR>",     { desc = "Next buffer" })
+map("n", "<S-Left>", "<cmd>bprevious<CR>", { desc = "Previous buffer (arrow)" })
+map("n", "<S-Right>","<cmd>bnext<CR>",     { desc = "Next buffer (arrow)" })
 
--- Pane navigation (hjkl and arrows)
+-- Pane navigation (hjkl)
 map("n", "<C-h>", "<C-w>h", { desc = "Go to left pane" })
 map("n", "<C-j>", "<C-w>j", { desc = "Go to lower pane" })
 map("n", "<C-k>", "<C-w>k", { desc = "Go to upper pane" })
 map("n", "<C-l>", "<C-w>l", { desc = "Go to right pane" })
-map("n", "<C-Left>",  "<C-w>h", { desc = "Go to left pane" })
-map("n", "<C-Down>",  "<C-w>j", { desc = "Go to lower pane" })
-map("n", "<C-Up>",    "<C-w>k", { desc = "Go to upper pane" })
-map("n", "<C-Right>", "<C-w>l", { desc = "Go to right pane" })
 
--- Telescope (keeps your <leader>ff / <leader>fb habits)
+-- Pane navigation (arrows)
+map("n", "<C-Left>",  "<C-w>h", { desc = "Go to left pane (arrow)" })
+map("n", "<C-Down>",  "<C-w>j", { desc = "Go to lower pane (arrow)" })
+map("n", "<C-Up>",    "<C-w>k", { desc = "Go to upper pane (arrow)" })
+map("n", "<C-Right>", "<C-w>l", { desc = "Go to right pane (arrow)" })
+
+-- Telescope (find files / buffers)
 map("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { desc = "Find files" })
 map("n", "<leader>fb", "<cmd>Telescope buffers<CR>",    { desc = "Find buffers" })
 
--- Center screen after motions/search
-map("n", "n", "nzzzv", { desc = "Next search result (centered)" })
-map("n", "N", "Nzzzv", { desc = "Previous search result (centered)" })
+-- Center the cursor after motions/search
+map("n", "n",     "nzzzv",   { desc = "Next search result (centered)" })
+map("n", "N",     "Nzzzv",   { desc = "Previous search result (centered)" })
 map("n", "<C-d>", "<C-d>zz", { desc = "Half-page down (centered)" })
 map("n", "<C-u>", "<C-u>zz", { desc = "Half-page up (centered)" })
 
--- Resize windows
-map("n", "<C-Up>",    ":resize +2<CR>",            { desc = "Increase window height" })
-map("n", "<C-Down>",  ":resize -2<CR>",            { desc = "Decrease window height" })
-map("n", "<C-Left>",  ":vertical resize -2<CR>",   { desc = "Decrease window width" })
-map("n", "<C-Right>", ":vertical resize +2<CR>",   { desc = "Increase window width" })
+-- Resize windows with Ctrl+Arrows
+map("n", "<C-Up>",    ":resize +2<CR>",           { desc = "Increase window height" })
+map("n", "<C-Down>",  ":resize -2<CR>",           { desc = "Decrease window height" })
+map("n", "<C-Left>",  ":vertical resize -2<CR>",  { desc = "Decrease window width" })
+map("n", "<C-Right>", ":vertical resize +2<CR>",  { desc = "Increase window width" })
 
--- Git (fugitive + gitsigns)
-map("n", "<leader>gs", "<cmd>Git<CR>",           { desc = "Git status (fugitive)" })
-map("n", "<leader>ga", "<cmd>Gwrite<CR>",        { desc = "Stage current file" })
-map("n", "<leader>gc", "<cmd>Git commit<CR>",    { desc = "Git commit" })
-map("n", "<leader>gp", "<cmd>Git push<CR>",      { desc = "Git push" })
+-- Git (Fugitive)
+map("n", "<leader>gs", "<cmd>Git<CR>",               { desc = "Git status" })
+map("n", "<leader>ga", "<cmd>Gwrite<CR>",            { desc = "Stage current file" })
+map("n", "<leader>gc", "<cmd>Git commit<CR>",        { desc = "Git commit" })
+map("n", "<leader>gp", "<cmd>Git push<CR>",          { desc = "Git push" })
 map("n", "<leader>gP", "<cmd>Git pull --rebase<CR>", { desc = "Git pull --rebase" })
-map("n", "<leader>gb", "<cmd>Gblame<CR>",        { desc = "Git blame (fugitive)" })
-map("n", "<leader>gd", "<cmd>Gdiffsplit<CR>",    { desc = "Git diff (split)" })
+map("n", "<leader>gb", "<cmd>Gblame<CR>",            { desc = "Git blame" })
+map("n", "<leader>gd", "<cmd>Gdiffsplit<CR>",        { desc = "Git diff (split)" })
 
--- Gitsigns hunk navigation (nice to have)
-map("n", "]h", function() require("gitsigns").nav_hunk("next") end, { desc = "Next git hunk" })
-map("n", "[h", function() require("gitsigns").nav_hunk("prev") end, { desc = "Prev git hunk" })
-map("n", "<leader>hs", function() require("gitsigns").stage_hunk() end, { desc = "Stage hunk" })
-map("n", "<leader>hu", function() require("gitsigns").undo_stage_hunk() end, { desc = "Undo stage hunk" })
-
--- ----------------------------
--- Autocommands (Lua)
--- ----------------------------
--- Remove trailing whitespace on save (your old autocmd, but in Lua)
+-- 4) Autocommands ---------------------------------------------------------
+-- Remove trailing whitespace on save (preserve cursor/view)
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = "*",
   callback = function()
@@ -330,10 +349,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   end,
 })
 
--- ----------------------------
--- LSP-friendly defaults
--- ----------------------------
--- (Optional) basic diagnostic signs look clean with gitsigns
+-- 5) Diagnostics UX (optional polish) ------------------------------------
 vim.diagnostic.config({
   virtual_text = { spacing = 2, prefix = "●" },
   float = { border = "rounded" },
