@@ -1,0 +1,11 @@
+# Ignore everything at repo root
+/*
+
+# Keep the ignore file itself (so it's tracked)
+!.gitignore
+
+# Whitelist specific items
+!README.md
+!.vimrc
+!nvim/init.lua
+!.tmux.conf

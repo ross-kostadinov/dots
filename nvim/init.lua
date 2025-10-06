@@ -1,4 +1,5 @@
 -- ===================================================================
+---@diagnostic disable: undefined-global
 -- Neovim init.lua — full config with lazy.nvim, which-key (spec),
 -- lualine (powerline arrows), Telescope, nvim-tree, LSP (0.11 API),
 -- completion, Git, and *all your original mappings with comments*.
@@ -131,8 +132,6 @@ require("lazy").setup({
   },
 
   -- GIT ------------------------------------------------------------------
-  "tpope/vim-fugitive",               -- :Git, :Gwrite, :Gblame, :Gdiffsplit
-  { "rbong/vim-flog", cmd = { "Flog", "Flogsplit" } }, -- optional Git graph
   { "lewis6991/gitsigns.nvim", opts = {} },
   -- LazyGit (floating window like Telescope)
   {
@@ -336,18 +335,10 @@ map("n", "<C-Down>",  ":resize -2<CR>",           { desc = "Decrease window heig
 map("n", "<C-Left>",  ":vertical resize -2<CR>",  { desc = "Decrease window width" })
 map("n", "<C-Right>", ":vertical resize +2<CR>",  { desc = "Increase window width" })
 
--- Git (Fugitive)
-map("n", "<leader>gs", "<cmd>Git<CR>",             { desc = "Git status" })
-map("n", "<leader>ga", "<cmd>Gwrite<CR>",          { desc = "Stage current file" })
-map("n", "<leader>gc", "<cmd>Git commit<CR>",      { desc = "Git commit" })
-map("n", "<leader>gp", "<cmd>Git push<CR>",        { desc = "Git push" })
-map("n", "<leader>gP", "<cmd>Git pull --rebase<CR>",{ desc = "Git pull --rebase" })
-map("n", "<leader>gb", "<cmd>Gblame<CR>",          { desc = "Git blame" })
-map("n", "<leader>gd", "<cmd>Gdiffsplit<CR>",        { desc = "Git diff (split)" })
 -- LazyGit shortcuts (floating window)
 map("n", "<leader>gg", "<cmd>LazyGit<CR>",               { desc = "LazyGit (float)" })
 map("n", "<leader>gF", "<cmd>LazyGitCurrentFile<CR>",    { desc = "LazyGit current file" })
-map("n", "<leader>gC", "<cmd>LazyGitConfig<CR>",         { desc = "LazyGit config" })
+
 -- Which-key helpers in a window (Telescope-like UX)
 map("n", "<leader>wk", function() require("which-key").show({ keys = "<leader>", loop = true }) end, { desc = "Which-key: Leader menu" })
 
