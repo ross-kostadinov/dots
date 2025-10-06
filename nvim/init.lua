@@ -33,6 +33,7 @@ vim.opt.signcolumn = "yes"                          -- Stable sign column
 vim.opt.wrap = false                                -- Don't wrap long lines
 vim.opt.scrolloff = 10                              -- Keep context around cursor
 vim.opt.showmode = false                            -- Hide -- INSERT -- (statusline will show)
+vim.opt.showtabline = 2                             -- Show tabs
 vim.opt.mouse = "a"                                 -- Mouse support
 vim.opt.clipboard = "unnamedplus"                   -- System clipboard
 
@@ -71,7 +72,10 @@ require("lazy").setup({
     "navarasu/onedark.nvim",
     lazy = false,
     priority = 1000,
-    opts = { style = "darker" },
+    opts = {
+      style = "darker",
+      transparent = true
+    },
     config = function(_, opts)
       require("onedark").setup(opts)
       require("onedark").load()
@@ -102,6 +106,23 @@ require("lazy").setup({
   },
 
   -- FILE EXPLORER --------------------------------------------------------
+   {
+    "akinsho/bufferline.nvim",
+    version = "*",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      options = {
+        mode = "buffers",                     -- show buffers as tabs
+        diagnostics = "nvim_lsp",             -- show LSP diagnostics on tabs
+        always_show_bufferline = true,
+        offsets = {
+          { filetype = "NvimTree", text = "File Explorer", highlight = "Directory", separator = true },
+        },
+        show_close_icon = false,
+      },
+    },
+  },
+
   {
     "nvim-tree/nvim-tree.lua",
     dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -233,7 +254,7 @@ require("lazy").setup({
         registers = true,
         spelling = { enabled = true, suggestions = 20 },
       },
-      win = { border = "rounded", title = "which-key", title_pos = "center" },
+      win = { border = "rounded"},
       layout = { spacing = 6, align = "left" },
       spec = {
         -- Group labels for your leader menus and common prefixes
@@ -333,6 +354,16 @@ map("n", "<C-Up>",    ":resize +2<CR>",           { desc = "Increase window heig
 map("n", "<C-Down>",  ":resize -2<CR>",           { desc = "Decrease window height" })
 map("n", "<C-Left>",  ":vertical resize -2<CR>",  { desc = "Decrease window width" })
 map("n", "<C-Right>", ":vertical resize +2<CR>",  { desc = "Increase window width" })
+
+-- Bufferline helpers
+map("n", "<leader>bb", "<cmd>BufferLinePick<CR>",           { desc = "Pick buffer" })
+map("n", "<leader>bc", "<cmd>bdelete<CR>",                  { desc = "Close buffer" })
+map("n", "<leader>bo", "<cmd>BufferLineCloseOthers<CR>",     { desc = "Close other buffers" })
+
+-- Jump to buffer 1..9 via <leader>1..9
+for i = 1, 9 do
+  map("n", "<leader>" .. i, "<cmd>BufferLineGoToBuffer " .. i .. "<CR>", { desc = "Go to buffer " .. i })
+end
 
 -- LazyGit shortcuts (floating window)
 map("n", "<leader>gg", "<cmd>LazyGit<CR>",               { desc = "LazyGit (float)" })
