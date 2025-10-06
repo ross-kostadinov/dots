@@ -7,5 +7,5 @@
 # Whitelist specific items
 !README.md
 !.vimrc
-!nvim/init.lua
+!./nvim/init.lua
 !.tmux.conf
