@@ -53,6 +53,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'prabirshrestha/asyncomplete-lsp.vim'
   Plug 'prabirshrestha/vim-lsp'
 
+  Plug 'liuchengxu/vim-which-key'
 call plug#end()
 
 
@@ -121,6 +122,7 @@ set undofile                    " Enable persistent undo
 " ----------------------------
 " Set leader key
 let mapleader = ' '
+nnoremap <silent> <leader> :WhichKey '<Space>'<CR>
 
 " Use k+j vor Esc
 inoremap kj <esc>
@@ -178,8 +180,17 @@ nnoremap <leader>ff :Files<CR>
 nnoremap <leader>fb :Buffers<CR>
 
 " Center screen after scrolling
+nnoremap n nzzzv
+nnoremap N Nzzzv
 nnoremap <C-d> <C-d>zz
 nnoremap <C-u> <C-u>zz
+
+" Resizing Windows
+nnoremap <C-Up>    :resize +2<CR>
+nnoremap <C-Down>  :resize -2<CR>
+nnoremap <C-Left>  :vertical resize -2<CR>
+nnoremap <C-Right> :vertical resize +2<CR>
+
 
 " ----------------------------
 " Airline Configuration
@@ -195,3 +206,32 @@ let g:airline#extensions#tabline#tab_min_count = 2
 " Autocommands
 " ----------------------------
 autocmd BufWritePre * %s/\s\+$//e  " Remove trailing whitespace on save
+
+" optional: show key hints after 500ms
+let g:which_key_timeout = 100
+
+" register groups and mappings manually
+call which_key#register(',', 'g:which_key_map')
+
+let g:which_key_map = {}
+
+" Create a Git group under <leader>g
+let g:which_key_map.g = {
+      \ 'name': '+git',
+      \ 's': 'Status',
+      \ 'a': 'Add current file',
+      \ 'c': 'Commit',
+      \ 'p': 'Push',
+      \ 'P': 'Pull',
+      \ 'b': 'Blame',
+      \ 'd': 'Diff',
+      \ }
+
+" actual mappings
+nnoremap <leader>gs :Git<CR>
+nnoremap <leader>ga :Gwrite<CR>
+nnoremap <leader>gc :Git commit<CR>
+nnoremap <leader>gp :Git push<CR>
+nnoremap <leader>gP :Git pull<CR>
+nnoremap <leader>gb :Gblame<CR>
+nnoremap <leader>gd :Gdiffsplit<CR>
