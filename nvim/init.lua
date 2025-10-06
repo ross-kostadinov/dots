@@ -1,11 +1,12 @@
 -- ===================================================================
--- Neovim init.lua — Full config with lazy.nvim, which-key (spec),
+-- Neovim init.lua — full config with lazy.nvim, which-key (spec),
 -- lualine (powerline arrows), Telescope, nvim-tree, LSP (0.11 API),
--- completion, Git, and ALL your mappings with comments.
----@diagnostic disable: undefined-global
+-- completion, Git, and *all your original mappings with comments*.
 -- ===================================================================
 
--- 0) Bootstrap lazy.nvim ---------------------------------------------------
+--
+-- 0) Bootstrap lazy.nvim -------------------------------------------------
+--
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -16,52 +17,56 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- 1) Core Options ----------------------------------------------------------
-vim.g.mapleader = " "  -- Space as <leader>
+--
+-- 1) Core Options --------------------------------------------------------
+--
+vim.g.mapleader = " "                               -- Space as <leader>
 
 -- UI
-vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.numberwidth = 4
-vim.opt.termguicolors = true
-vim.opt.cursorline = true
-vim.opt.signcolumn = "yes"
-vim.opt.wrap = false
-vim.opt.scrolloff = 10
-vim.opt.showmode = false
-vim.opt.mouse = "a"
-vim.opt.clipboard = "unnamedplus"
+vim.opt.number = true                               -- Absolute line numbers
+vim.opt.relativenumber = true                       -- Relative line numbers
+vim.opt.numberwidth = 4                             -- Number column width
+vim.opt.termguicolors = true                        -- 24-bit colors
+vim.opt.cursorline = true                           -- Highlight current line
+vim.opt.signcolumn = "yes"                          -- Stable sign column
+vim.opt.wrap = false                                -- Don't wrap long lines
+vim.opt.scrolloff = 10                              -- Keep context around cursor
+vim.opt.showmode = false                            -- Hide -- INSERT -- (statusline will show)
+vim.opt.mouse = "a"                                 -- Mouse support
+vim.opt.clipboard = "unnamedplus"                   -- System clipboard
 
--- Editing / Indent
-vim.opt.expandtab = true
-vim.opt.tabstop = 2
-vim.opt.softtabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.smartindent = true
+-- Editing
+vim.opt.expandtab = true                            -- Tabs -> spaces
+vim.opt.tabstop = 2                                 -- Visual width of tabs
+vim.opt.softtabstop = 2                             -- <Tab> in insert mode
+vim.opt.shiftwidth = 2                              -- Indent width
+vim.opt.smartindent = true                          -- Smart indent
 
 -- Search
-vim.opt.incsearch = true
-vim.opt.hlsearch = false
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
+vim.opt.incsearch = true                            -- Incremental search
+vim.opt.hlsearch = false                            -- Don't persist highlights
+vim.opt.ignorecase = true                           -- Case-insensitive by default
+vim.opt.smartcase = true                            -- ...unless query has capitals
 
 -- Windows / Buffers
-vim.opt.splitbelow = true
-vim.opt.splitright = true
-vim.opt.hidden = true
+vim.opt.splitbelow = true                           -- New horizontal splits go below
+vim.opt.splitright = true                           -- New vertical splits go right
+vim.opt.hidden = true                               -- Switch buffers without saving
 
 -- Undo / Backups
-vim.opt.swapfile = false
-vim.opt.backup = false
-vim.opt.undofile = true
-vim.opt.undodir = "~/config/nvim/undodir"
+vim.opt.swapfile = false                            -- No swap files
+vim.opt.backup = false                              -- No backups
+vim.opt.undofile = true                             -- Persistent undo
+vim.opt.undodir = "~/.config/nvim/undodir"
 
--- Performance
-vim.opt.updatetime = 250
+-- Perf
+vim.opt.updatetime = 250                            -- Faster UI updates
 
--- 2) Plugins via lazy.nvim -------------------------------------------------
+--
+-- 2) Plugins via lazy.nvim ------------------------------------------------
+--
 require("lazy").setup({
-  -- Theme
+  -- THEME ----------------------------------------------------------------
   {
     "navarasu/onedark.nvim",
     lazy = false,
@@ -72,12 +77,9 @@ require("lazy").setup({
       require("onedark").load()
     end,
   },
-
-  -- Icons (which-key health likes this)
   { "echasnovski/mini.icons", version = "*", opts = {} },
-  { "nvim-tree/nvim-web-devicons" },
 
-  -- Statusline (with powerline arrows)
+  -- STATUSLINE (with powerline arrows) -----------------------------------
   {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -85,8 +87,8 @@ require("lazy").setup({
       options = {
         theme = "onedark",
         globalstatus = true,
-        section_separators   = { left = "", right = "" }, -- arrows
-        component_separators = { left = "", right = "" }, -- thin separators
+        section_separators = { left = "", right = "" }, -- Powerline arrows
+        component_separators = { left = "", right = "" }, -- Thin separators
       },
       sections = {
         lualine_a = { "mode" },
@@ -99,7 +101,7 @@ require("lazy").setup({
     },
   },
 
-  -- File Explorer
+  -- FILE EXPLORER --------------------------------------------------------
   {
     "nvim-tree/nvim-tree.lua",
     dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -113,14 +115,13 @@ require("lazy").setup({
     },
   },
 
-  -- Telescope + native FZF
+  -- FUZZY FINDING (Telescope + native fzf) -------------------------------
   {
     "nvim-telescope/telescope.nvim",
     branch = "0.1.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
-      { "nvim-telescope/telescope-fzf-native.nvim", build = "make",
-        cond = function() return vim.fn.executable("make") == 1 end },
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make", cond = function() return vim.fn.executable("make") == 1 end },
     },
     config = function()
       local t = require("telescope")
@@ -129,18 +130,30 @@ require("lazy").setup({
     end,
   },
 
-  -- Git
-  "tpope/vim-fugitive",
-  { "rbong/vim-flog", cmd = { "Flog", "Flogsplit" } },
+  -- GIT ------------------------------------------------------------------
+  "tpope/vim-fugitive",               -- :Git, :Gwrite, :Gblame, :Gdiffsplit
+  { "rbong/vim-flog", cmd = { "Flog", "Flogsplit" } }, -- optional Git graph
   { "lewis6991/gitsigns.nvim", opts = {} },
+  -- LazyGit (floating window like Telescope)
+  {
+    "kdheepak/lazygit.nvim",
+    cmd = { "LazyGit", "LazyGitCurrentFile", "LazyGitConfig" },
+    dependencies = { "nvim-lua/plenary.nvim" },
+    init = function()
+      vim.g.lazygit_floating_window_winblend = 0
+      vim.g.lazygit_floating_window_scaling_factor = 0.95
+      vim.g.lazygit_floating_window_border_chars = { "╭","─","╮","│","╯","─","╰","│" }
+      vim.g.lazygit_use_neovim_remote = 1
+    end,
+  },            -- sign column hunks
 
-  -- Editing QoL
-  { "numToStr/Comment.nvim", opts = {} },
+  -- EDITING QUALITY OF LIFE ----------------------------------------------
+  { "numToStr/Comment.nvim", opts = {} },              -- gc, gcc comments
   { "kylechui/nvim-surround", version = "*", opts = {} },
   { "windwp/nvim-autopairs", event = "InsertEnter", opts = {} },
   { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
 
-  -- LSP (Neovim 0.11 API + fallback)
+  -- LSP (Neovim 0.11+ API via vim.lsp.config) ----------------------------
   { "neovim/nvim-lspconfig" },
   { "williamboman/mason.nvim", build = ":MasonUpdate", opts = {} },
   {
@@ -148,26 +161,24 @@ require("lazy").setup({
     dependencies = { "hrsh7th/cmp-nvim-lsp" },
     config = function()
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
-      local has_new = vim.lsp and vim.lsp.config
-      local function lsp_setup(server, opts)
-        opts = opts or {}
-        opts.capabilities = capabilities
-        if has_new and vim.lsp.config[server] then
-          vim.lsp.config[server].setup(opts)
-        else
-          require("lspconfig")[server].setup(opts)
-        end
-      end
-
       require("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls", "ts_ls", "pyright", "gopls", "bashls", "jsonls", "yamlls" },
+        ensure_installed = {
+          "lua_ls", "ts_ls", "pyright", "gopls", "bashls", "jsonls", "yamlls",
+        },
         handlers = {
-          function(server) lsp_setup(server, {}) end,
+          -- default handler for installed servers
+          function(server)
+            if vim.lsp.config[server] then
+              vim.lsp.config[server].setup({ capabilities = capabilities })
+            end
+          end,
+          -- custom Lua settings so it knows `vim` global
           lua_ls = function()
-            lsp_setup("lua_ls", {
+            vim.lsp.config.lua_ls.setup({
+              capabilities = capabilities,
               settings = {
                 Lua = {
-                  diagnostics = { globals = { 'vim' } },
+                  diagnostics = { globals = { "vim" } },
                   workspace = { checkThirdParty = false },
                 },
               },
@@ -178,7 +189,7 @@ require("lazy").setup({
     end,
   },
 
-  -- Completion
+  -- COMPLETION -----------------------------------------------------------
   {
     "hrsh7th/nvim-cmp",
     dependencies = {
@@ -208,120 +219,116 @@ require("lazy").setup({
             else fallback() end
           end, { "i", "s" }),
         }),
-        sources = {
-          { name = "nvim_lsp" },
-          { name = "path" },
-          { name = "buffer" },
-          { name = "luasnip" },
-        },
+        sources = { { name = "nvim_lsp" }, { name = "path" }, { name = "buffer" }, { name = "luasnip" } },
       })
     end,
   },
 
-  -- which-key (modern spec)  ---------------------------------------------
+  -- WHICH-KEY (modern spec) ---------------------------------------------
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
     opts = {
-      preset = "helix",
+      preset = "helix", -- visuals; change to "classic" if preferred
       plugins = {
         marks = true,
         registers = true,
         spelling = { enabled = true, suggestions = 20 },
       },
-      win = { border = "single" },  -- NOTE: 'win' replaces deprecated 'window'
+      win = { border = "rounded", title = "which-key", title_pos = "center" },
       layout = { spacing = 6, align = "left" },
       spec = {
-        -- Groups/prefixes (flat spec entries are simplest & robust)
-        { "<leader>f",  group = "file/find",        mode = { "n", "v" } },
-        { "<leader>g",  group = "git",              mode = { "n", "v" } },
-        { "<leader>b",  group = "buffers",          mode = { "n", "v" } },
-        { "<leader>w",  group = "windows",          mode = "n", proxy = "<c-w>",
+        -- Group labels for your leader menus and common prefixes
+        { "<leader>f",  group = "file/find",            mode = { "n", "v" } },
+        { "<leader>g",  group = "git",                  mode = { "n", "v" } },
+        { "<leader>b",  group = "buffers",              mode = { "n", "v" } },
+        { "<leader>w",  group = "windows", proxy = "<c-w>", mode = { "n" },
           expand = function() return require("which-key.extras").expand.win() end },
-        { "<leader>t",  group = "tabs",             mode = "n" },
-        { "<leader>s",  group = "splits",           mode = "n" },
-        { "<leader>u",  group = "ui",               mode = "n" },
-        { "<leader>x",  group = "diagnostics",      mode = "n" },
-        { "<leader>e",  group = "explorer",         mode = "n" },
-        { "g",          group = "goto",             mode = { "n", "v" } },
-        { "z",          group = "fold",             mode = "n" },
-        { "[",          group = "prev",             mode = "n" },
-        { "]",          group = "next",             mode = "n" },
-        { "gx",         desc  = "Open with system app", mode = "n" },
+        { "<leader>t",  group = "tabs",                 mode = { "n" } },
+        { "<leader>s",  group = "splits",               mode = { "n" } },
+        { "<leader>u",  group = "ui",                   mode = { "n" } },
+        { "<leader>x",  group = "diagnostics",          mode = { "n" } },
+        { "<leader>e",  group = "explorer",             mode = { "n" } },
+        { "g",          group = "goto",                 mode = { "n", "v" } },
+        { "z",          group = "fold",                 mode = { "n" } },
+        { "[",          group = "prev",                 mode = { "n" } },
+        { "]",          group = "next",                 mode = { "n" } },
+        { "gx",         desc  = "Open with system app",  mode = { "n" } },
       },
     },
     keys = {
-      { "<leader>?", function() require("which-key").show({ global = false }) end,
-        desc = "Show buffer-local keymaps" },
-      { "<c-w><space>", function() require("which-key").show({ keys = "<c-w>", loop = true }) end,
-        desc = "Window keymap helper" },
+      { "<leader>?", function() require("which-key").show({ global = false }) end, desc = "Show buffer-local keymaps" },
+      { "<c-w><space>", function() require("which-key").show({ keys = "<c-w>", loop = true }) end, desc = "Window keymap helper" },
     },
   },
 }, {
   ui = { border = "rounded" },
 })
 
--- 3) Your Keymaps (all with comments + desc) ------------------------------
+--
+-- 3) Your Keymaps (with comments) ----------------------------------------
+--
 local map = vim.keymap.set
 
--- Quick escape using "kj"
+-- Show which-key popup (just examples above use automatic triggers)
+-- map("n", "<leader>", "<cmd>WhichKey '<Space>'<CR>", { desc = "Show leader keymaps" }) -- not needed normally
+
+-- Quick exit from insert/visual using "kj"
 map("i", "kj", "<Esc>", { desc = "Exit insert mode" })
 map("v", "kj", "<Esc>", { desc = "Exit visual mode" })
 
--- File explorer
+-- File Explorer: toggle nvim-tree
 map("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
 
--- Increment/Decrement numbers
+-- Increment / Decrement numbers with leader
 map("n", "<leader>+", "<C-a>", { desc = "Increment number" })
 map("n", "<leader>-", "<C-x>", { desc = "Decrement number" })
 
 -- Buffer Management
-map("n", "<leader>bo", "<cmd>enew<CR>",      { desc = "New empty buffer" })
-map("n", "<leader>bx", "<cmd>bwipeout<CR>",  { desc = "Wipe buffer" })
-map("n", "<leader>bn", "<cmd>bnext<CR>",     { desc = "Next buffer" })
-map("n", "<leader>bp", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
-map("n", "<leader>bl", "<cmd>ls<CR>",        { desc = "List buffers" })
+map("n", "<leader>bo", "<cmd>enew<CR>",       { desc = "New empty buffer" })
+map("n", "<leader>bx", "<cmd>bwipeout<CR>",   { desc = "Wipe buffer" })
+map("n", "<leader>bn", "<cmd>bnext<CR>",      { desc = "Next buffer" })
+map("n", "<leader>bp", "<cmd>bprevious<CR>",  { desc = "Previous buffer" })
+map("n", "<leader>bl", "<cmd>ls<CR>",         { desc = "List buffers" })
 
--- Window Management
-map("n", "<leader>sv", "<C-w>v",         { desc = "Split window vertically" })
-map("n", "<leader>sh", "<C-w>s",         { desc = "Split window horizontally" })
-map("n", "<leader>se", "<C-w>=",         { desc = "Equalize window sizes" })
-map("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current window" })
+-- Window / Split Management
+map("n", "<leader>sv", "<C-w>v",              { desc = "Split window vertically" })
+map("n", "<leader>sh", "<C-w>s",              { desc = "Split window horizontally" })
+map("n", "<leader>se", "<C-w>=",              { desc = "Equalize window sizes" })
+map("n", "<leader>sx", "<cmd>close<CR>",      { desc = "Close current window" })
 
 -- Tab Management
-map("n", "<leader>to", "<cmd>tabnew<CR>",      { desc = "New tab" })
-map("n", "<leader>tx", "<cmd>tabclose<CR>",    { desc = "Close tab" })
-map("n", "<leader>tn", "<cmd>tabnext<CR>",     { desc = "Next tab" })
+map("n", "<leader>to", "<cmd>tabnew<CR>",     { desc = "New tab" })
+map("n", "<leader>tx", "<cmd>tabclose<CR>",   { desc = "Close tab" })
+map("n", "<leader>tn", "<cmd>tabnext<CR>",    { desc = "Next tab" })
 map("n", "<leader>tp", "<cmd>tabprevious<CR>", { desc = "Previous tab" })
 map("n", "<leader>tb", "<cmd>tab split<CR>",   { desc = "Open buffer in new tab" })
 
--- Move between buffers
-map("n", "<S-h>",    "<cmd>bprevious<CR>", { desc = "Previous buffer" })
-map("n", "<S-l>",    "<cmd>bnext<CR>",     { desc = "Next buffer" })
-map("n", "<S-Left>", "<cmd>bprevious<CR>", { desc = "Previous buffer (arrow)" })
-map("n", "<S-Right>","<cmd>bnext<CR>",     { desc = "Next buffer (arrow)" })
+-- Move between buffers (Shift+h/l) and with Shift+Arrows
+map("n", "<S-h>", ":bprevious<CR>",           { desc = "Previous buffer" })
+map("n", "<S-l>", ":bnext<CR>",               { desc = "Next buffer" })
+map("n", "<S-Left>",  ":bprevious<CR>",       { desc = "Previous buffer (arrow)" })
+map("n", "<S-Right>", ":bnext<CR>",           { desc = "Next buffer (arrow)" })
 
--- Pane navigation (hjkl)
-map("n", "<C-h>", "<C-w>h", { desc = "Go to left pane" })
-map("n", "<C-j>", "<C-w>j", { desc = "Go to lower pane" })
-map("n", "<C-k>", "<C-w>k", { desc = "Go to upper pane" })
-map("n", "<C-l>", "<C-w>l", { desc = "Go to right pane" })
+-- Pane / Window Navigation with hjkl and arrows
+map("n", "<C-h>", "<C-w>h",                    { desc = "Go to left pane" })
+map("n", "<C-j>", "<C-w>j",                    { desc = "Go to lower pane" })
+map("n", "<C-k>", "<C-w>k",                    { desc = "Go to upper pane" })
+map("n", "<C-l>", "<C-w>l",                    { desc = "Go to right pane" })
+map("n", "<C-Left>",  "<C-w>h",                { desc = "Go to left pane (arrow)" })
+map("n", "<C-Down>",  "<C-w>j",                { desc = "Go to lower pane (arrow)" })
+map("n", "<C-Up>",    "<C-w>k",                { desc = "Go to upper pane (arrow)" })
+map("n", "<C-Right>", "<C-w>l",                { desc = "Go to right pane (arrow)" })
 
--- Pane navigation (arrows)
-map("n", "<C-Left>",  "<C-w>h", { desc = "Go to left pane (arrow)" })
-map("n", "<C-Down>",  "<C-w>j", { desc = "Go to lower pane (arrow)" })
-map("n", "<C-Up>",    "<C-w>k", { desc = "Go to upper pane (arrow)" })
-map("n", "<C-Right>", "<C-w>l", { desc = "Go to right pane (arrow)" })
-
--- Telescope (find files / buffers)
+-- Telescope pickers (replacing fzf.vim usage)
 map("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { desc = "Find files" })
 map("n", "<leader>fb", "<cmd>Telescope buffers<CR>",    { desc = "Find buffers" })
 
--- Center the cursor after motions/search
-map("n", "n",     "nzzzv",   { desc = "Next search result (centered)" })
-map("n", "N",     "Nzzzv",   { desc = "Previous search result (centered)" })
-map("n", "<C-d>", "<C-d>zz", { desc = "Half-page down (centered)" })
-map("n", "<C-u>", "<C-u>zz", { desc = "Half-page up (centered)" })
+-- Center screen after motions/search
+map("n", "n", "nzzzv",                      { desc = "Next search result (centered)" })
+map("n", "N", "Nzzzv",                      { desc = "Previous search result (centered)" })
+map("n", "<C-d>", "<C-d>zz",                { desc = "Half-page down (centered)" })
+map("n", "<C-u>", "<C-u>zz",                { desc = "Half-page up (centered)" })
 
 -- Resize windows with Ctrl+Arrows
 map("n", "<C-Up>",    ":resize +2<CR>",           { desc = "Increase window height" })
@@ -330,16 +337,30 @@ map("n", "<C-Left>",  ":vertical resize -2<CR>",  { desc = "Decrease window widt
 map("n", "<C-Right>", ":vertical resize +2<CR>",  { desc = "Increase window width" })
 
 -- Git (Fugitive)
-map("n", "<leader>gs", "<cmd>Git<CR>",               { desc = "Git status" })
-map("n", "<leader>ga", "<cmd>Gwrite<CR>",            { desc = "Stage current file" })
-map("n", "<leader>gc", "<cmd>Git commit<CR>",        { desc = "Git commit" })
-map("n", "<leader>gp", "<cmd>Git push<CR>",          { desc = "Git push" })
-map("n", "<leader>gP", "<cmd>Git pull --rebase<CR>", { desc = "Git pull --rebase" })
-map("n", "<leader>gb", "<cmd>Gblame<CR>",            { desc = "Git blame" })
+map("n", "<leader>gs", "<cmd>Git<CR>",             { desc = "Git status" })
+map("n", "<leader>ga", "<cmd>Gwrite<CR>",          { desc = "Stage current file" })
+map("n", "<leader>gc", "<cmd>Git commit<CR>",      { desc = "Git commit" })
+map("n", "<leader>gp", "<cmd>Git push<CR>",        { desc = "Git push" })
+map("n", "<leader>gP", "<cmd>Git pull --rebase<CR>",{ desc = "Git pull --rebase" })
+map("n", "<leader>gb", "<cmd>Gblame<CR>",          { desc = "Git blame" })
 map("n", "<leader>gd", "<cmd>Gdiffsplit<CR>",        { desc = "Git diff (split)" })
+-- LazyGit shortcuts (floating window)
+map("n", "<leader>gg", "<cmd>LazyGit<CR>",               { desc = "LazyGit (float)" })
+map("n", "<leader>gF", "<cmd>LazyGitCurrentFile<CR>",    { desc = "LazyGit current file" })
+map("n", "<leader>gC", "<cmd>LazyGitConfig<CR>",         { desc = "LazyGit config" })
+-- Which-key helpers in a window (Telescope-like UX)
+map("n", "<leader>wk", function() require("which-key").show({ keys = "<leader>", loop = true }) end, { desc = "Which-key: Leader menu" })
 
--- 4) Autocommands ---------------------------------------------------------
--- Remove trailing whitespace on save (preserve cursor/view)
+-- Optional: Gitsigns hunk helpers (comment out if you don't want them)
+-- map("n", "]h", function() require("gitsigns").nav_hunk("next") end, { desc = "Next git hunk" })
+-- map("n", "[h", function() require("gitsigns").nav_hunk("prev") end, { desc = "Prev git hunk" })
+-- map("n", "<leader>hs", function() require("gitsigns").stage_hunk() end, { desc = "Stage hunk" })
+-- map("n", "<leader>hu", function() require("gitsigns").undo_stage_hunk() end, { desc = "Undo stage hunk" })
+
+--
+-- 4) Autocommands --------------------------------------------------------
+--
+-- Remove trailing whitespace on save (preserve view)
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = "*",
   callback = function()
@@ -349,9 +370,3 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   end,
 })
 
--- 5) Diagnostics UX (optional polish) ------------------------------------
-vim.diagnostic.config({
-  virtual_text = { spacing = 2, prefix = "●" },
-  float = { border = "rounded" },
-  severity_sort = true,
-})
