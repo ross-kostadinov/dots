@@ -58,7 +58,6 @@ vim.opt.hidden = true                               -- Switch buffers without sa
 vim.opt.swapfile = false                            -- No swap files
 vim.opt.backup = false                              -- No backups
 vim.opt.undofile = true                             -- Persistent undo
-vim.opt.undodir = "~/.config/nvim/undodir"
 
 -- Perf
 vim.opt.updatetime = 250                            -- Faster UI updates
