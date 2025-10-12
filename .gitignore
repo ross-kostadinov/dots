@@ -7,8 +7,8 @@
 # Whitelist specific items
 !README.md
 !setup.sh
-!./nvim/
-!./vim/
-!./tmux/
-!./zsh/
-!./ghostty/
+!nvim/
+!vim/
+!tmux/
+!zsh/
+!ghostty/
