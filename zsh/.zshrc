@@ -46,6 +46,7 @@ export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agen
 alias yk-ssh='eval "$(ssh-agent -s)" && ssh-add -K && ssh-add -L'
 export GPG_TTY=$(tty)
 bindkey -v
+eval "$(zoxide init zsh)"
 source ~/powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
