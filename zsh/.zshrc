@@ -34,7 +34,10 @@ eval "$(pyenv init --path)"
 export PATH="$PATH:/Users/ross/Library/Python/3.11/bin"
 export PATH="$PATH:/Users/ross/.local/bin"
 
-alias ll='ls -alh'
+alias ls='ls --color=auto'
+alias ll='ls -alh --color=auto'
+alias la='ls -A --color=auto'
+alias l='ls -CF --color=auto'
 
 [[ ! "$PATH" == *fzf* ]] && source ~/.fzf.zsh
 
