@@ -6,6 +6,9 @@
 
 # Whitelist specific items
 !README.md
-!.vimrc
-!./nvim/init.lua
-!.tmux.conf
+!setup.sh
+!./nvim/
+!./vim/
+!./tmux/
+!./zsh/
+!./ghostty/
