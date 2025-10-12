@@ -68,6 +68,8 @@ alias gcoall='git checkout -- .'
 alias gr='git remote'
 alias gre='git reset'
 
+#Edit multiple files using nvim and fzf (use tab for file selection)
+alias nvf='nvim $(fzf -m --preview="bat --color=always {}")'
 
 # --- fzf (robust)
 [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
