@@ -1,6 +1,6 @@
 # --- Faster, safe completion
-autoload -Uz compinit
-compinit -C
+# autoload -Uz compinit
+# compinit -C
 
 # --- PATH sanity (dedupe once)
 typeset -U PATH path
@@ -11,9 +11,6 @@ path=(/opt/homebrew/opt/openssh/bin $path)
 
 # --- Wine
 path+=("/Applications/Wine Staging.app/Contents/Resources/wine/bin")
-
-# --- (Optional) X11 fallback – only if you really need it
-# export DYLD_FALLBACK_LIBRARY_PATH="/usr/lib:/opt/X11/lib:${DYLD_FALLBACK_LIBRARY_PATH}"
 
 # --- nvm lazy-load
 export NVM_DIR="$HOME/.nvm"
@@ -31,9 +28,6 @@ command -v pyenv >/dev/null || path=("$PYENV_ROOT/bin" $path)
 # ~/.zprofile: eval "$(pyenv init --path)"
 # ~/.zshrc for shell features:
 eval "$(pyenv init -)"
-
-# --- Extra PATHs
-path+=("$HOME/Library/Python/3.11/bin" "$HOME/.local/bin")
 
 # --- Aliases (macOS vs Linux)
 if [[ "$OSTYPE" == darwin* ]]; then
@@ -56,7 +50,7 @@ alias gc="git commit -m"
 alias gca="git commit -a -m"
 alias gp="git push origin HEAD"
 alias gpu="git pull origin"
-alias gst="git status"
+alias gs="git status"
 alias glog="git log --graph --topo-order --pretty='%w(100,0,6)%C(yellow)%h%C(bold)%C(black)%d %C(cyan)%ar %C(green)%an%n%C(bold)%C(white)%s %N' --abbrev-commit"
 alias gdiff="git diff"
 alias gco="git checkout"
@@ -77,7 +71,7 @@ alias nvf='nvim $(fzf -m --preview="bat --color=always {}")'
 # --- 1Password SSH agent (pick ONE agent strategy)
 export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 # If you truly need a manual agent, use this instead and DON'T set SSH_AUTH_SOCK above:
-# alias start-ssh-agent='eval "$(ssh-agent -s)" && ssh-add --apple-use-keychain'
+alias start-ssh-agent='eval "$(ssh-agent -s)" && ssh-add --apple-use-keychain'
 
 # --- GPG + vi-mode
 export GPG_TTY="$(tty)"
