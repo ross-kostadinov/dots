@@ -77,11 +77,14 @@ vim.keymap.set("n", "<leader>+", "<C-a>", { desc = "Increment number" })
 vim.keymap.set("n", "<leader>-", "<C-x>", { desc = "Decrement number" })
 
 -- Buffer Management
-vim.keymap.set("n", "<leader>bo", "<cmd>enew<CR>", { desc = "New empty buffer" })
+vim.keymap.set("n", "<leader>bc", "<cmd>enew<CR>", { desc = "New empty buffer" })
+vim.keymap.set("n", "<leader>bd", "<cmd>bdelete<CR>", { desc = "Close buffer" })
 vim.keymap.set("n", "<leader>bx", "<cmd>bwipeout<CR>", { desc = "Wipe buffer" })
 vim.keymap.set("n", "<leader>bn", "<cmd>bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<leader>bp", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
 vim.keymap.set("n", "<leader>bl", "<cmd>ls<CR>", { desc = "List buffers" })
+vim.keymap.set("n", "<leader>bb", "<cmd>BufferLinePick<CR>", { desc = "Pick buffer" })
+vim.keymap.set("n", "<leader>bo", "<cmd>BufferLineCloseOthers<CR>", { desc = "Close other buffers" })
 
 -- Move between buffers (Shift + h/l)
 vim.keymap.set("n", "<S-h>", ":bprevious<CR>", { desc = "Previous buffer" })
@@ -116,11 +119,6 @@ vim.keymap.set("n", "<C-Up>", ":resize +2<CR>", { desc = "Increase window height
 vim.keymap.set("n", "<C-Down>", ":resize -2<CR>", { desc = "Decrease window height" })
 vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", { desc = "Decrease window width" })
 vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", { desc = "Increase window width" })
-
--- Bufferline helpers
-vim.keymap.set("n", "<leader>bb", "<cmd>BufferLinePick<CR>", { desc = "Pick buffer" })
-vim.keymap.set("n", "<leader>bc", "<cmd>bdelete<CR>", { desc = "Close buffer" })
-vim.keymap.set("n", "<leader>bo", "<cmd>BufferLineCloseOthers<CR>", { desc = "Close other buffers" })
 
 -- LazyGit shortcuts (floating window)
 vim.keymap.set("n", "<leader>gg", "<cmd>LazyGit<CR>", { desc = "LazyGit (float)" })
