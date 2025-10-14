@@ -157,6 +157,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
+vim.api.nvim_set_hl(0, 'BufferLineFill', { bg = "#1a1b26" })
 
 --
 -- 4) Plugin Manager: Lazy
@@ -239,7 +240,7 @@ require("lazy").setup({
           { filetype = "NvimTree", text = "File Explorer", highlight = "Directory", separator = true },
         },
         show_close_icon = false,
-        separator_style = "slant",
+        separator_style = "thin"
       },
     },
   },
