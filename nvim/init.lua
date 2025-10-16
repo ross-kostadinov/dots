@@ -111,8 +111,9 @@ vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper win
 -- Center screen after motions/search
 vim.keymap.set("n", "n", "nzzzv", { desc = "Next search result (centered)" })
 vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous search result (centered)" })
-vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half-page down (centered)" })
-vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Half-page up (centered)" })
+-- The lines bellow are currently not needed, because of Neoscroll plugin
+-- vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half-page down (centered)" })
+-- vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Half-page up (centered)" })
 
 -- Resize windows with Ctrl+Arrows
 vim.keymap.set("n", "<C-Up>", ":resize +2<CR>", { desc = "Increase window height" })
@@ -790,7 +791,65 @@ require("lazy").setup({
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
 
-  -- Collection of various small independent plugins/modules ---------------------------xw
+  -- NeoScroll (Smooth scroll)
+  {
+    "karb94/neoscroll.nvim",
+    event = "VeryLazy",
+    config = function()
+      local neoscroll = require("neoscroll")
+
+      neoscroll.setup({
+        easing_function = "quadratic",
+        hide_cursor = true,
+        stop_eof = true,
+        respect_scrolloff = false,
+        cursor_scrolls_alone = true,
+      })
+
+      local dur_half = 250
+      local dur_full = 450
+
+      local function center_after(ms)
+        vim.defer_fn(function()
+          -- center without affecting registers/mappings
+          vim.cmd("normal! zz")
+        end, ms)
+      end
+
+      -- Half-page with center
+      vim.keymap.set({ "n", "v" }, "<C-d>", function()
+        neoscroll.ctrl_d({ duration = dur_half })
+        center_after(dur_half)
+      end, { silent = true })
+
+      vim.keymap.set({ "n", "v" }, "<C-u>", function()
+        neoscroll.ctrl_u({ duration = dur_half })
+        center_after(dur_half)
+      end, { silent = true })
+
+      -- Full-page with center (optional)
+      vim.keymap.set({ "n", "v" }, "<C-f>", function()
+        neoscroll.ctrl_f({ duration = dur_full })
+        center_after(dur_full)
+      end, { silent = true })
+
+      vim.keymap.set({ "n", "v" }, "<C-b>", function()
+        neoscroll.ctrl_b({ duration = dur_full })
+        center_after(dur_full)
+      end, { silent = true })
+
+      -- Gentle line scrolls (no centering)
+      vim.keymap.set({ "n", "v" }, "<C-e>", function()
+        neoscroll.scroll(0.10, { move_cursor = false, duration = 100 })
+      end, { silent = true })
+
+      vim.keymap.set({ "n", "v" }, "<C-y>", function()
+        neoscroll.scroll(-0.10, { move_cursor = false, duration = 100 })
+      end, { silent = true })
+    end,
+  },
+
+  -- Collection of various small independent plugins/modules -----------------------------
   {
     "echasnovski/mini.nvim",
     config = function()
