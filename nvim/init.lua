@@ -59,6 +59,10 @@ vim.o.timeoutlen = 300   -- Decrease mapped sequence wait time
 vim.keymap.set("i", "jj", "<Esc>", { desc = "Exit Insert mode" })
 vim.keymap.set("v", "kj", "<Esc>", { desc = "Exit Visual mode" })
 
+-- Move whole lines with J & K in Visual Mode
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+
 -- Disable arrow keys in normal mode
 vim.keymap.set("n", "<left>", '<cmd>echo "Use h to move!!"<CR>')
 vim.keymap.set("n", "<right>", '<cmd>echo "Use l to move!!"<CR>')
@@ -882,6 +886,7 @@ require("lazy").setup({
     end,
   },
 
+  -- Snacks
   {
     "folke/snacks.nvim",
     priority = 1000,
