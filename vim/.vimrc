@@ -120,6 +120,9 @@ set undofile                    " Enable persistent undo
 " ----------------------------
 " Remaps
 " ----------------------------
+" Set the leader key
+let mapleader = "\<Space>"
+let maplocalleader = ","
 
 " Use k+j vor Esc
 inoremap kj <esc>
@@ -204,36 +207,81 @@ let g:airline#extensions#tabline#tab_min_count = 2
 " ----------------------------
 autocmd BufWritePre * %s/\s\+$//e  " Remove trailing whitespace on save
 
-" optional: show key hints after 500ms
-let g:which_key_timeout = 100
+" ----------------------------
+" WhichKey setup for all <leader> mappings
+" ----------------------------
 
-" WhichKey setup
-let mapleader = ' '
+set timeout
+set timeoutlen=300
+let g:which_key_timeout = 300
 
-" Define the maps first
+" Define the map table (no inline comments inside the dict!)
 let g:which_key_map = {}
 
+" Root (single-key) leader mappings
+let g:which_key_map.e = 'File Explorer'
+let g:which_key_map['+'] = 'Increment number'
+let g:which_key_map['-'] = 'Decrement number'
+
+" git: <leader>g?
 let g:which_key_map.g = {
-      \ 'name': '+git',
+      \ 'name': 'Git',
       \ 's': 'Status',
       \ 'a': 'Add current file',
       \ 'c': 'Commit',
       \ 'p': 'Push',
       \ 'P': 'Pull',
       \ 'b': 'Blame',
-      \ 'd': 'Diff',
+      \ 'd': 'Diff (split)',
       \ }
 
-" Show WhichKey when pressing <leader>
+let g:which_key_map.h = {
+      \ 'name': 'Hunks',
+      \ 'p': 'Preview hunk',
+      \ 's': 'Stage hunk',
+      \ 'u': 'Undo hunk',
+      \ }
+
+" buffers: <leader>b?
+let g:which_key_map.b = {
+      \ 'name': 'Buffers',
+      \ 'o': 'New empty buffer',
+      \ 'x': 'Wipeout buffer',
+      \ 'n': 'Next buffer',
+      \ 'p': 'Previous buffer',
+      \ 'l': 'List buffers',
+      \ }
+
+" splits/windows: your maps start with <leader>s...
+let g:which_key_map.s = {
+      \ 'name': 'Splits',
+      \ 'v': 'Split vertical',
+      \ 'h': 'Split horizontal',
+      \ 'e': 'Equalize',
+      \ 'x': 'Close window',
+      \ }
+
+" tabs: <leader>t?
+let g:which_key_map.t = {
+      \ 'name': 'Tabs',
+      \ 'o': 'New tab',
+      \ 'x': 'Close tab',
+      \ 'n': 'Next tab',
+      \ 'p': 'Previous tab',
+      \ 'b': 'Split to new tab',
+      \ }
+
+" find/FZF: <leader>f?
+let g:which_key_map.f = {
+      \ 'name': 'Find',
+      \ 'f': 'Files',
+      \ 'b': 'Buffers',
+      \ }
+
+" Show WhichKey on Space and register Space prefix
 nnoremap <silent> <leader> :<C-u>WhichKey '<Space>'<CR>
-
-" Now register the correct prefix
+nnoremap <silent> <Space>  :<C-u>WhichKey '<Space>'<CR>
 call which_key#register('<Space>', 'g:which_key_map')
-
-" Optional: show hints if you pause after <leader>
-set timeout
-set timeoutlen=300
-let g:which_key_timeout = 300
 
 " actual mappings
 nnoremap <leader>gs :Git<CR>
