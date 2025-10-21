@@ -120,9 +120,6 @@ set undofile                    " Enable persistent undo
 " ----------------------------
 " Remaps
 " ----------------------------
-" Set leader key
-let mapleader = ' '
-nnoremap <silent> <leader> :WhichKey '<Space>'<CR>
 
 " Use k+j vor Esc
 inoremap kj <esc>
@@ -210,12 +207,12 @@ autocmd BufWritePre * %s/\s\+$//e  " Remove trailing whitespace on save
 " optional: show key hints after 500ms
 let g:which_key_timeout = 100
 
-" register groups and mappings manually
-call which_key#register(',', 'g:which_key_map')
+" WhichKey setup
+let mapleader = ' '
 
+" Define the maps first
 let g:which_key_map = {}
 
-" Create a Git group under <leader>g
 let g:which_key_map.g = {
       \ 'name': '+git',
       \ 's': 'Status',
@@ -226,6 +223,17 @@ let g:which_key_map.g = {
       \ 'b': 'Blame',
       \ 'd': 'Diff',
       \ }
+
+" Show WhichKey when pressing <leader>
+nnoremap <silent> <leader> :<C-u>WhichKey '<Space>'<CR>
+
+" Now register the correct prefix
+call which_key#register('<Space>', 'g:which_key_map')
+
+" Optional: show hints if you pause after <leader>
+set timeout
+set timeoutlen=300
+let g:which_key_timeout = 300
 
 " actual mappings
 nnoremap <leader>gs :Git<CR>
