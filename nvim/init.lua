@@ -188,22 +188,41 @@ rtp:prepend(lazypath)
 --
 require("lazy").setup({
 
-  -- THEME -----------------------------------------------------------------
+  -- -- -- THEME -----------------------------------------------------------------
   {
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    "folke/tokyonight.nvim",
-    priority = 1000, -- Make sure to load this before all the other start plugins.
+    "joshdick/onedark.vim",
+    lazy = false,
+    priority = 1000,
     config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require("tokyonight").setup({
-        styles = {
-          comments = { italic = false }, -- Disable italics in comments
-        },
-      })
+      -- optional: make the theme respect your terminal bg (nice with panes)
+      vim.g.onedark_transparent_background = true
+      vim.g.onedark_terminal_italics = 1
 
-      vim.cmd.colorscheme("tokyonight-night")
+      vim.cmd.colorscheme("onedark")
+
+      -- Ensure floats/panels match editor bg
+      vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#282c34" }) -- onedark main bg
+      vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#3E4452", bg = "#282c34" })
+      vim.api.nvim_set_hl(0, "WhichKeyNormal", { bg = "#282c34" })
+      vim.api.nvim_set_hl(0, "WhichKeyBorder", { fg = "#3E4452", bg = "#282c34" })
+      vim.api.nvim_set_hl(0, "BufferLineFill", { bg = "#282c34" })
+      vim.api.nvim_set_hl(0, "BufferLineOffsetSeparator", { fg = "#3E4452", bg = "#282c34" })
     end,
   },
+  -- {
+  --   "folke/tokyonight.nvim",
+  --   priority = 1000, -- Make sure to load this before all the other start plugins.
+  --   config = function()
+  --     ---@diagnostic disable-next-line: missing-fields
+  --     require("tokyonight").setup({
+  --       styles = {
+  --         comments = { italic = false }, -- Disable italics in comments
+  --       },
+  --     })
+  --
+  --     vim.cmd.colorscheme("tokyonight-night")
+  --   end,
+  -- },
 
   -- Mini Icons
   { "echasnovski/mini.icons", version = "*", opts = {} },
@@ -214,7 +233,7 @@ require("lazy").setup({
     dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {
       options = {
-        theme = "tokyonight",
+        -- theme = "tokyonight",
         globalstatus = true,
         section_separators = { left = "", right = "" }, -- Powerline arrows
         component_separators = { left = "", right = "" }, -- Thin separators

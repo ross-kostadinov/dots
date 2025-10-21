@@ -6,8 +6,8 @@ window-decoration = true
 keybind = global:cmd+/=toggle_quick_terminal
 macos-option-as-alt = true
 font-family = "UbuntuMono Nerd Font"
-#theme = "One Half Dark"
-theme = "TokyoNight"
-# theme = "Atom One Dark"
+theme = "One Half Dark"
+#theme = "TokyoNight"
+#theme = "Atom One Dark"
 window-width = 120
 window-height = 40
